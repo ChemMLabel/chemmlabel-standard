@@ -1,0 +1,291 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ChemMLabel Material Schema",
+  "description": "A standardized, machine-readable schema for representing chemical and material compositions, structures, properties, and processing history for machine learning applications. (Version 1.1 with enhanced provenance, property conditions, and external linking).",
+  "type": "object",
+  "required": [
+    "material_id",
+    "material_name",
+    "material_type",
+    "composition_details"
+  ],
+  "properties": {
+    "material_id": {
+      "type": "string",
+      "description": "A globally unique identifier for the material entry (e.g., UUID, or structured ID)."
+    },
+    "material_name": {
+      "type": "string",
+      "description": "A human-readable name for the material or item."
+    },
+    "material_type": {
+      "type": "string",
+      "description": "The general classification of the material.",
+      "enum": [
+        "Element",
+        "Compound",
+        "Mixture",
+        "Alloy",
+        "Polymer",
+        "Ceramic",
+        "Composite",
+        "Biological_Material",
+        "Assembly",
+        "Other"
+      ]
+    },
+    "composition_details": {
+      "type": "object",
+      "description": "Detailed chemical composition of the material.",
+      "required": ["constituents"],
+      "properties": {
+        "constituents": {
+          "type": "array",
+          "description": "An array of the primary chemical components of the material.",
+          "items": {
+            "type": "object",
+            "oneOf": [
+              { "$ref": "#/definitions/element_constituent" },
+              { "$ref": "#/definitions/compound_constituent" },
+              { "$ref": "#/definitions/sub_mixture_constituent" }
+            ]
+          },
+          "minItems": 1
+        },
+        "structural_information": {
+          "type": "object",
+          "description": "Information about the atomic/molecular arrangement and bonding.",
+          "properties": {
+            "phase_type": {
+              "type": "string",
+              "enum": ["Solid_Solution", "Intermetallic_Compound", "Amorphous", "Crystalline", "Liquid", "Gas", "Plasma"]
+            },
+            "crystal_structure_type": {
+              "type": "string",
+              "description": "For crystalline materials (e.g., FCC, BCC, HCP, Orthorhombic, Monoclinic).",
+              "enum": ["FCC", "BCC", "HCP", "Cubic", "Tetragonal", "Orthorhombic", "Hexagonal", "Rhombohedral", "Monoclinic", "Triclinic", "Unknown"]
+            },
+            "bonding_type": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["Metallic", "Covalent", "Ionic", "Hydrogen_Bond", "Van_der_Waals"]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "microstructure_features": {
+              "type": "array",
+              "description": "Specific features of the microstructure (e.g., grain size, inclusions).",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "feature": {"type": "string"},
+                  "value": {},
+                  "unit": {"type": "string"},
+                  "notes": {"type": "string"}
+                },
+                "required": ["feature", "value"]
+              }
+            }
+          }
+        }
+      },
+      "minProperties": 1
+    },
+    "properties": {
+      "type": "object",
+      "description": "Measurable properties of the material, categorized.",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "type": "object",
+          "description": "A category of properties (e.g., 'mechanical', 'electrical').",
+          "patternProperties": {
+            "^[a-z_]+$": {
+              "type": "object",
+              "properties": {
+                "value": {},
+                "unit": {"type": "string"},
+                "uncertainty": {"type": ["number", "string"]},
+                "conditions": {
+                  "type": "object",
+                  "description": "Conditions under which the property was measured or simulated.",
+                  "patternProperties": {
+                    "^[a-z_]+$": {
+                      "type": "object",
+                      "properties": {
+                        "value": {},
+                        "unit": {"type": "string"}
+                      },
+                      "required": ["value"]
+                    }
+                  },
+                  "minProperties": 1,
+                  "additionalProperties": false
+                },
+                "method": {"type": "string", "description": "Method used to obtain the property (e.g., 'Tensile Test', 'DFT Simulation')."}
+              },
+              "required": ["value"],
+              "additionalProperties": false
+            }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "processing_history": {
+      "type": "object",
+      "description": "Details about how the material was manufactured or processed.",
+      "properties": {
+        "manufacturing_method": {
+          "type": "string",
+          "description": "Primary method of manufacturing (e.g., Casting, Forging, 3D_Printing, Synthesis, Machining, Assembly)."
+        },
+        "heat_treatment_steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {"type": "string", "enum": ["Annealing", "Quenching", "Tempering", "Aging", "Sintering"]},
+              "temperature_C": {"type": "number"},
+              "duration_hours": {"type": "number"},
+              "atmosphere": {"type": "string"}
+            },
+            "required": ["type"]
+          }
+        },
+        "other_processing_notes": {"type": "string"}
+      }
+    },
+    "application_context": {
+      "type": "array",
+      "description": "Common or intended applications of the material.",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Information about the origin and lineage of the data.",
+      "properties": {
+        "data_source_type": {
+          "type": "string",
+          "enum": ["Experimental", "Computational", "Literature", "Supplier_Datasheet", "Internal_Database", "Other"]
+        },
+        "data_source_id": {"type": "string", "description": "Identifier for the specific source (e.g., lab notebook ID, simulation run ID, publication DOI)."},
+        "data_generator": {"type": "string", "description": "Name or ID of the person/organization that generated the data."},
+        "date_generated": {"type": "string", "format": "date", "description": "Date the data was originally generated (YYYY-MM-DD)."},
+        "process_id_link": {"type": "string", "description": "Link to a specific process record that produced this material (e.g., in a LIMS/ELN)."},
+        "raw_data_url": {"type": "string", "format": "uri", "description": "URL to raw data files, if stored externally."}
+      },
+      "minProperties": 1
+    },
+    "external_references": {
+      "type": "array",
+      "description": "Links to external standards, databases, or identifiers.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string", "enum": ["CAS_Number", "PubChem_CID", "Materials_Project_ID", "ASTM_Standard", "ISO_Standard", "UNS_Number", "Supplier_ID", "DOI", "Other"]},
+          "value": {"type": "string"},
+          "url": {"type": "string", "format": "uri"}
+        },
+        "required": ["type", "value"]
+      },
+      "uniqueItems": true
+    },
+    "data_attachments": {
+      "type": "array",
+      "description": "Links to external raw data files (e.g., images, spectra, simulation outputs).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file_name": {"type": "string"},
+          "file_type": {"type": "string", "enum": ["Image", "Spectrum", "XRD_Pattern", "Stress_Strain_Curve", "Simulation_Output", "Other"]},
+          "url": {"type": "string", "format": "uri"},
+          "description": {"type": "string"}
+        },
+        "required": ["file_name", "file_type", "url"]
+      }
+    },
+    "standard_version": {
+      "type": "string",
+      "description": "Version of the ChemMLabel standard used for this entry.",
+      "default": "ChemMLabel_v1.1"
+    },
+    "date_created": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the entry was created (YYYY-MM-DD)."
+    },
+    "last_modified": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the entry was last modified (YYYY-MM-DD)."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Any additional free-form notes or comments."
+    }
+  },
+  "definitions": {
+    "element_constituent": {
+      "type": "object",
+      "description": "Represents an elemental component.",
+      "required": ["element_symbol", "atomic_number"],
+      "properties": {
+        "element_symbol": {"type": "string", "pattern": "^[A-Z][a-z]?$"},
+        "atomic_number": {"type": "integer", "minimum": 1},
+        "mass_percentage": {"type": "number", "minimum": 0, "maximum": 100},
+        "atomic_percentage": {"type": "number", "minimum": 0, "maximum": 100},
+        "isotopic_composition": {
+          "type": "object",
+          "description": "Specific isotopic abundances (e.g., {'Cu63': 69.17, 'Cu65': 30.83}).",
+          "patternProperties": {
+            "^[A-Z][a-z]?[0-9]+$": {"type": "number", "minimum": 0, "maximum": 100}
+          },
+          "minProperties": 1
+        }
+      },
+      "oneOf": [
+        {"required": ["mass_percentage"]},
+        {"required": ["atomic_percentage"]}
+      ],
+      "additionalProperties": false
+    },
+    "compound_constituent": {
+      "type": "object",
+      "description": "Represents a compound component.",
+      "required": ["molecular_formula", "name"],
+      "properties": {
+        "molecular_formula": {"type": "string"},
+        "name": {"type": "string"},
+        "mass_percentage": {"type": "number", "minimum": 0, "maximum": 100},
+        "inchi_key": {"type": "string", "pattern": "^[A-Z]{14}-[A-Z]{10}[A-Z]-[A-Z]$"},
+        "smiles": {"type": "string"},
+        "cas_number": {"type": "string"}
+      },
+      "oneOf": [
+        {"required": ["mass_percentage"]}
+      ],
+      "additionalProperties": false
+    },
+    "sub_mixture_constituent": {
+      "type": "object",
+      "description": "Represents a sub-mixture or complex component (e.g., a specific plastic in an assembly).",
+      "required": ["material_name", "mass_percentage", "composition"],
+      "properties": {
+        "material_name": {"type": "string"},
+        "mass_percentage": {"type": "number", "minimum": 0, "maximum": 100},
+        "composition": {
+          "type": "object",
+          "description": "A nested ChemMLabel material object for the sub-component.",
+          "$ref": "#"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
