@@ -1,8 +1,10 @@
 # ChemMLabel Standard
 
+After you finish reading and experimenting with this tool, we would appreciate your feedback: https://survey.sogolytics.com/r/UoqddY
+
 ## The Universal Language for Materials Data in the AI Age
 
- **Vision: Unlocking the Future of Materials with AI**  
+**Vision: Unlocking the Future of Materials with AI**  
 The world of materials science and chemistry is rich with data, yet it remains largely fragmented, inconsistent, and difficult for machines to interpret. This "dark data" significantly slows down innovation, research, and the adoption of advanced AI and Machine Learning in critical industries.
 
 **ChemMLabel** is our answer. We envision a future where every material, every chemical, and every product—from its atomic composition to its complex assembly—can be described in a single, standardized, and machine-readable chemical language. This universal language will empower AI to:
@@ -13,11 +15,11 @@ The world of materials science and chemistry is rich with data, yet it remains l
 
 ---
 
-##  What is ChemMLabel?
+## What is ChemMLabel?
 
 **ChemMLabel** is an open-source data standard designed to provide a **comprehensive, hierarchical, and unambiguous** representation of materials and chemical entities. It's built on **JSON Schema** to ensure strict validation and seamless integration with computational tools.
 
-###  Key Components of the Standard
+### Key Components of the Standard
 
 - **Hierarchical Composition**  
   Represent anything from pure elements and compounds to complex alloys, polymers, composites, and multi-component assemblies (like a battery or a car), detailing their chemical makeup at any level of granularity.
@@ -36,7 +38,7 @@ The world of materials science and chemistry is rich with data, yet it remains l
 
 ---
 
-##  Why ChemMLabel Matters
+## Why ChemMLabel Matters
 
 - **Accelerates Innovation**  
   Faster discovery and design of new materials.
@@ -55,7 +57,7 @@ The world of materials science and chemistry is rich with data, yet it remains l
 
 ---
 
-##  Project Structure
+## Project Structure
 
 This repository contains the foundational assets for the **ChemMLabel** standard:
 
@@ -63,7 +65,30 @@ This repository contains the foundational assets for the **ChemMLabel** standard
 
 - **`tools/python/`**: Python utilities for parsing, serializing, and validating ChemMLabel JSON data.
 
-
 ---
 
-Here is the url for 
+## Contributing
+
+We welcome contributions of all kinds — from fixing bugs to suggesting new schema elements, building tools, or improving documentation.
+
+### How to Contribute
+
+1. **Fork the repository** and create your feature branch:  
+   ```bash
+   git checkout -b feature/your-feature-name
+Make your changes, test thoroughly, and commit
+
+We'll review your PR, and if all looks good, we'll merge it in!
+
+Contribution Ideas
+- Add validation examples or test datasets
+- Suggest schema improvements or extensions
+- Build utilities for integration with ML frameworks
+- Write tutorials, use cases, or documentation
+
+Help us improve internationalization and standard compatibility
+
+We’re building ChemMLabel as a community-driven initiative. Let’s shape the future of materials data — together.
+
+
+
